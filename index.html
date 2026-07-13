@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калькулятор быстрого расчёта мебели</title>
+  <style>
+    :root {
+      --bg: #f4f1ec;
+      --card: #fffdf9;
+      --text: #26211c;
+      --muted: #746b60;
+      --accent: #8b5e34;
+      --accent-dark: #6f4520;
+      --line: #e5d9ca;
+      --good: #2f7d46;
+      --shadow: 0 18px 45px rgba(63, 42, 24, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(139, 94, 52, 0.18), transparent 32rem),
+        linear-gradient(135deg, #f7f0e8 0%, var(--bg) 45%, #ece4d8 100%);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .panel {
+      background: rgba(255, 253, 249, 0.92);
+      border: 1px solid rgba(229, 217, 202, 0.85);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .intro { padding: 34px; }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #efe4d7;
+      color: var(--accent-dark);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .total-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(160deg, #8b5e34, #4f2f18);
+      color: #fff8ef;
+    }
+
+    .total-label { opacity: 0.8; font-size: 15px; }
+
+    .total-value {
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .total-note { opacity: 0.82; line-height: 1.45; }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 24px;
+    }
+
+    form.panel { padding: 28px; }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px 16px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(139, 94, 52, 0.14);
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .hint {
+      margin: 18px 0 0;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: #f6efe6;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .breakdown { padding: 28px; }
+
+    .rows { display: grid; gap: 12px; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .row strong { color: var(--text); text-align: right; }
+    .row.profit strong { color: var(--good); }
+    .row.final {
+      align-items: center;
+      margin-top: 4px;
+      padding: 16px;
+      border: 0;
+      border-radius: 18px;
+      background: #f1e5d6;
+      color: var(--accent-dark);
+      font-weight: 800;
+    }
+    .row.final strong { font-size: 24px; color: var(--accent-dark); }
+
+    @media (max-width: 900px) {
+      .hero, .calculator { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 20px, 1120px); padding: 20px 0; }
+      .intro, .total-card, form.panel, .breakdown { padding: 22px; border-radius: 22px; }
+      .grid { grid-template-columns: 1fr; }
+      .row { align-items: flex-start; flex-direction: column; gap: 6px; }
+      .row strong { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="panel intro">
+        <div class="eyebrow">Astra Mebel · быстрый расчёт</div>
+        <h1>Калькулятор стоимости мебели</h1>
+        <p class="lead">Введите габариты изделия и актуальные цены материалов. Калькулятор считает ЛДСП, ХДФ и фасады в м², добавляет фурнитуру и прибыль с минимальным порогом 10&nbsp;000&nbsp;руб.</p>
+      </div>
+      <aside class="panel total-card" aria-live="polite">
+        <div class="total-label">Итоговая цена для клиента</div>
+        <div class="total-value" id="totalRounded">0 ₽</div>
+        <div class="total-note">Сумма автоматически округляется до 100 рублей.</div>
+      </aside>
+    </section>
+
+    <section class="calculator">
+      <form class="panel" id="calculatorForm">
+        <h2 class="section-title">Данные для расчёта</h2>
+        <div class="grid">
+          <label>Ширина изделия, мм
+            <input type="number" id="width" min="0" step="1" value="2000" inputmode="decimal">
+          </label>
+          <label>Высота изделия, мм
+            <input type="number" id="height" min="0" step="1" value="2400" inputmode="decimal">
+          </label>
+          <label>Глубина изделия, мм
+            <input type="number" id="depth" min="0" step="1" value="600" inputmode="decimal">
+          </label>
+          <label>Цена ЛДСП за м², ₽
+            <input type="number" id="ldspPrice" min="0" step="1" value="2800" inputmode="decimal">
+          </label>
+          <label>Цена ХДФ за м², ₽
+            <input type="number" id="hdfPrice" min="0" step="1" value="650" inputmode="decimal">
+          </label>
+          <label>Цена фасадов МДФ за м², ₽
+            <input type="number" id="mdfPrice" min="0" step="1" value="7800" inputmode="decimal">
+          </label>
+          <label>Фурнитура/услуги, ₽
+            <input type="number" id="hardware" min="0" step="1" value="18000" inputmode="decimal">
+          </label>
+          <label>Тип заказа
+            <select id="orderType">
+              <option value="0.4">Стандартный — 40% прибыли</option>
+              <option value="0.5">Сложный — 50% прибыли</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Отход, распил и средняя кромка считаются заложенными в цену за м². Кромка отдельно не рассчитывается.</p>
+      </form>
+
+      <aside class="panel breakdown">
+        <h2 class="section-title">Расшифровка расчёта</h2>
+        <div class="rows">
+          <div class="row"><span>Площадь ЛДСП</span><strong id="ldspArea">0 м²</strong></div>
+          <div class="row"><span>Площадь ХДФ</span><strong id="hdfArea">0 м²</strong></div>
+          <div class="row"><span>Площадь фасадов МДФ</span><strong id="mdfArea">0 м²</strong></div>
+          <div class="row"><span>Стоимость фурнитуры</span><strong id="hardwareCost">0 ₽</strong></div>
+          <div class="row"><span>Себестоимость</span><strong id="costPrice">0 ₽</strong></div>
+          <div class="row profit"><span>Прибыль</span><strong id="profit">0 ₽</strong></div>
+          <div class="row"><span>Итог до округления</span><strong id="totalRaw">0 ₽</strong></div>
+          <div class="row final"><span>Итог после округления</span><strong id="totalRoundedSmall">0 ₽</strong></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const fields = ['width', 'height', 'depth', 'ldspPrice', 'hdfPrice', 'mdfPrice', 'hardware', 'orderType'];
+    const minimumProfit = 10000;
+
+    const money = new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      maximumFractionDigits: 0
+    });
+
+    function numberValue(id) {
+      const value = Number(document.getElementById(id).value);
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    }
+
+    function area(value) {
+      return `${value.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} м²`;
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function calculate() {
+      const width = numberValue('width') / 1000;
+      const height = numberValue('height') / 1000;
+      const depth = numberValue('depth') / 1000;
+      const ldspPrice = numberValue('ldspPrice');
+      const hdfPrice = numberValue('hdfPrice');
+      const mdfPrice = numberValue('mdfPrice');
+      const hardware = numberValue('hardware');
+      const profitRate = Number(document.getElementById('orderType').value);
+
+      const ldspArea = 2 * (width * height + width * depth + height * depth);
+      const hdfArea = width * height;
+      const mdfArea = width * height;
+      const materialCost = ldspArea * ldspPrice + hdfArea * hdfPrice + mdfArea * mdfPrice;
+      const costPrice = materialCost + hardware;
+      const profit = Math.max(costPrice * profitRate, minimumProfit);
+      const totalRaw = costPrice + profit;
+      const totalRounded = Math.round(totalRaw / 100) * 100;
+
+      setText('ldspArea', area(ldspArea));
+      setText('hdfArea', area(hdfArea));
+      setText('mdfArea', area(mdfArea));
+      setText('hardwareCost', money.format(hardware));
+      setText('costPrice', money.format(costPrice));
+      setText('profit', money.format(profit));
+      setText('totalRaw', money.format(totalRaw));
+      setText('totalRounded', money.format(totalRounded));
+      setText('totalRoundedSmall', money.format(totalRounded));
+    }
+
+    fields.forEach((id) => document.getElementById(id).addEventListener('input', calculate));
+    fields.forEach((id) => document.getElementById(id).addEventListener('change', calculate));
+    calculate();
+  </script>
+</body>
+</html>
